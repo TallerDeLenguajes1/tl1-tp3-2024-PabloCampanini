@@ -20,7 +20,7 @@ struct Cliente
     // “CantidadProductosAPedir”
 } typedef Cliente;
 
-float montoTotal(Producto producto);
+float montoTotal(Producto *producto);
 
 int main()
 {
@@ -32,12 +32,15 @@ int main()
     // Declaracion de variables
     int cantidadClientes;
     char *Buff = (char *)malloc(100 * sizeof(char));                   // Variable aux para el nombre
-    float *montos = (float *)malloc(cantidadClientes * sizeof(float)); // Almacenamiento montos
-    float *total = (float *)malloc(cantidadClientes * sizeof(float)); //Almaceno los montos totales a pagar de cada cliente
 
     // Cantidad de clientes ingresados por el usuario
     printf("Ingrese la cantidad de clientes: ");
     scanf("%d", &cantidadClientes);
+
+    fflush(stdin);  
+
+    float *montos = (float *)malloc(cantidadClientes * sizeof(float)); // Almacenamiento montos
+    float *total = (float *)malloc(cantidadClientes * sizeof(float)); //Almaceno los montos totales a pagar de cada cliente
 
     // Almacenamiento de los datos de los clientes
     Cliente *lista_cliente = (Cliente *)malloc(cantidadClientes * sizeof(Cliente));
@@ -51,7 +54,7 @@ int main()
         lista_cliente[i].ClienteID = i + 1; // ID del cliente, empieza en 1
 
         // Cargado del nombre del cliente por el usuario
-        printf("Ingrese el nombre del Cliente: %d", lista_cliente[i].ClienteID);
+        printf("Ingrese el nombre del Cliente %d: ", lista_cliente[i].ClienteID);
         gets(Buff);
 
         lista_cliente[i].NombreCliente = (char *)malloc((strlen(Buff) + 1) * sizeof(char));
@@ -72,16 +75,16 @@ int main()
             lista_cliente[i].Productos[j].Cantidad = 1 + rand() % 10;
 
             // Nombre del producto obtenido de arreglo TiposProductos
-            int indice = 1 + rand() % 5; // Elijo de forma aleatoria el tipoo de producto
+            int indice = rand() % 5; // Elijo de forma aleatoria el tipoo de producto
 
             lista_cliente[i].Productos[j].TipoProducto = (char *)malloc((strlen(TiposProductos[indice]) + 1) * sizeof(char)); // Reserva de memoria
-            lista_cliente[i].Productos[j].TipoProducto = TiposProductos[indice];
+            strcpy(lista_cliente[i].Productos[j].TipoProducto, TiposProductos[indice]);
 
             // Asignacion del precio unitario
             lista_cliente[i].Productos[j].PrecioUnitario = 10 + rand() % 91;
 
             // Determino el precio total
-            montos[j] = montoTotal(lista_cliente[i].Productos[j]);
+            montos[j] = montoTotal(&(lista_cliente[i].Productos[j]));
 
             //Suma de los montos de cada cliente
             total[i] = montos[j] + total[i];    //Suma de los montos de todos los productos
@@ -128,9 +131,9 @@ int main()
     return 0;
 }
 
-float montoTotal(Producto producto)
+float montoTotal(Producto *producto)
 {
-    float monto = producto.PrecioUnitario * producto.Cantidad;
+    float monto = producto->PrecioUnitario * producto->Cantidad;
 
     return monto;
 }
